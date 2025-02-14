@@ -209,7 +209,9 @@ impl BarState {
                     .format_state(&self.state, &mut draw_state.lines, width);
             }
         }
-
+        if force_draw {
+            draw_state.final_draw = force_draw;
+        }
         drop(draw_state);
         drawable.draw()
     }

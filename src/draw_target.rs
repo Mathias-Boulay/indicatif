@@ -483,6 +483,8 @@ pub(crate) struct DrawState {
     pub(crate) move_cursor: bool,
     /// Controls how the multi progress is aligned if some of its progress bars get removed, default is `Top`
     pub(crate) alignment: MultiProgressAlignment,
+    /// State whether this is the final draw
+    pub(crate) final_draw: bool,
 }
 
 impl DrawState {
@@ -561,10 +563,15 @@ impl DrawState {
             term.write_str(line.as_ref())?;
 
             if idx + 1 == self.lines.len() {
-                // For the last line of the output, keep the cursor on the right terminal
-                // side so that next user writes/prints will happen on the next line
-                let last_line_filler = line_height.as_usize() * term_width - line.console_width();
-                term.write_str(&" ".repeat(last_line_filler))?;
+                if self.final_draw {
+                    term.write_line("")?;
+                } else {
+                    // For the last line of the output, keep the cursor on the right terminal
+                    // side so that next user writes/prints will happen on the next line
+                    let last_line_filler =
+                        line_height.as_usize() * term_width - line.console_width();
+                    term.write_str(&" ".repeat(last_line_filler))?;
+                }
             }
         }
 
